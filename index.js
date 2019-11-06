@@ -1,16 +1,16 @@
-'use strict';
-
 //mongoose file must be loaded before all other files in order to provide
 // models to other modules
-var express = require('express'),
+const express = require('express'),
   router = express.Router(),
   bodyParser = require('body-parser'),
   swaggerUi = require('swagger-ui-express'),
   swaggerDocument = require('./swagger/swagger.json');
 
-var mongoose = require('mongoose'),
+const mongoose = require('mongoose'),
   Schema = mongoose.Schema,
   devConfig = require('./config/dev-config')
+
+const port = process.env.PORT || 3000;
 
 mongoose.connect(
     devConfig.Mongodb.connectionString,
@@ -21,7 +21,7 @@ mongoose.connect(
     () => {console.log("Connected to remote MongoDB")}
 );
 
-var UserSchema = new Schema({
+const UserSchema = new Schema({
   email: {
     type: String, required: true,
     trim: true, unique: true,
@@ -32,9 +32,9 @@ var UserSchema = new Schema({
 });
 
 mongoose.model('User', UserSchema);
-var User = require('mongoose').model('User');
+const User = require('mongoose').model('User');
 
-var app = express();
+const app = express();
 
 //rest API requirements
 app.use(bodyParser.urlencoded({
@@ -43,8 +43,8 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 //middleware for create
-var createUser = function (req, res, next) {
-  var user = new User(req.body);
+const createUser = function (req, res, next) {
+  const user = new User(req.body);
 
   user.save(function (err) {
     if (err) {
@@ -55,7 +55,7 @@ var createUser = function (req, res, next) {
   });
 };
 
-var updateUser = function (req, res, next) {
+const updateUser = function (req, res, next) {
   User.findByIdAndUpdate(req.body._id, req.body, {new: true}, function (err, user) {
     if (err) {
       next(err);
@@ -65,7 +65,7 @@ var updateUser = function (req, res, next) {
   });
 };
 
-var deleteUser = function (req, res, next) {
+const deleteUser = function (req, res, next) {
   req.user.remove(function (err) {
     if (err) {
       next(err);
@@ -75,7 +75,7 @@ var deleteUser = function (req, res, next) {
   });
 };
 
-var getAllUsers = function (req, res, next) {
+const getAllUsers = function (req, res, next) {
   User.find(function (err, users) {
     if (err) {
       next(err);
@@ -85,11 +85,11 @@ var getAllUsers = function (req, res, next) {
   });
 };
 
-var getOneUser = function (req, res) {
+const getOneUser = function (req, res) {
   res.json(req.user);
 };
 
-var getByIdUser = function (req, res, next, id) {
+const getByIdUser = function (req, res, next, id) {
   User.findOne({_id: id}, function (err, user) {
     if (err) {
       next(err);
@@ -114,6 +114,6 @@ router.param('userId', getByIdUser);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1', router);
 
-app.listen(3000);
+app.listen(port);
 module.exports = app;
 
