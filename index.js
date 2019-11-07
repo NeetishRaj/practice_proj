@@ -3,6 +3,7 @@
 const express = require('express'),
   router = express.Router(),
   bodyParser = require('body-parser'),
+  cors = require('cors'),
   swaggerUi = require('swagger-ui-express'),
   swaggerDocument = require('./swagger/swagger.json');
 
@@ -41,6 +42,9 @@ mongoose.model('User', UserSchema);
 const User = require('mongoose').model('User');
 
 const app = express();
+
+//enable cors
+app.use(cors());
 
 //rest API requirements
 app.use(bodyParser.urlencoded({

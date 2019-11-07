@@ -9,11 +9,11 @@
             "url": "https://opensource.org/licenses/MIT"
         }
     },
-    "host": "https://practice-proj.herokuapp.com/",
+    "host": "practice-proj.herokuapp.com",
     "basePath": "/api",
     "tags": [
         {
-            "name": "ping",
+            "name": "Ping",
             "description": "Check whether api is active"
         },
         {
@@ -34,7 +34,7 @@
         "/ping": {
             "get": {
                 "tags": [
-                    "ping"
+                    "Ping"
                 ],
                 "summary": "Check whether the API is active",
                 "responses": {
