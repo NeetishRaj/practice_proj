@@ -18,7 +18,12 @@ mongoose.connect(
         useNewUrlParser: true,
         useUnifiedTopology: true
     }, 
-    () => {console.log("Connected to remote MongoDB")}
+    (err) => {
+      if(err){
+        console.log(err);
+      }
+      console.log(`Connected to remote MongoDB at ${devConfig.Mongodb.connectionString}`);
+    }
 );
 
 const UserSchema = new Schema({
@@ -28,7 +33,8 @@ const UserSchema = new Schema({
     match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
   },
   firstName: {type: String},
-  lastName: {type: String}
+  lastName: {type: String},
+  password: String
 });
 
 mongoose.model('User', UserSchema);
@@ -100,6 +106,11 @@ const getByIdUser = function (req, res, next, id) {
   });
 };
 
+router.route('/ping')
+  .get((req, res) => {
+    res.json({message: "API is active"})
+  })
+
 router.route('/users')
   .post(createUser)
   .get(getAllUsers);
@@ -112,7 +123,7 @@ router.route('/users/:userId')
 router.param('userId', getByIdUser);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/api/v1', router);
+app.use('/api', router);
 
 app.listen(port);
 module.exports = app;
